@@ -12,7 +12,7 @@ env:
 jobs:
   Approve:
     runs-on: ubuntu-latest
-    if: github.event.label.name == 'Confirmed'
+    if: github.event.label.name == 'UnConfirmed'
         
     steps:
     - name: Checkout
