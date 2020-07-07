@@ -15,7 +15,7 @@ jobs:
 
     - name: set variables
       run: |
-        customer=$(echo "${{ github.event.issue.body }}" | grep -E 'Customer:' | sed 's/Customer: //gi')
+        customer=$(echo "${{ github.event.issue.body }}" | grep -E 'Customer Name:' | sed 's/Customer Name: //gi')
         echo FOUND CUSTOMER customer
         echo "::set-env name=customer::$customer"
         directory=$(echo "${{ github.event.issue.number }}-$customer")
@@ -37,7 +37,7 @@ jobs:
         git config --global user.name "Ricardo"
     - name: create readme from template and add to branch
       run: |
-        mkdir "$GITHUB_WORKSPACE/engagements/$directory"
+        mkdir "$GITHUB_WORKSPACE/engagement/$directory"
         cp "$GITHUB_WORKSPACE/.github/templates/readme.md" "$GITHUB_WORKSPACE/engagement/$directory/readme.md"
         git add "$GITHUB_WORKSPACE/engagement/$directory/readme.md"
         
