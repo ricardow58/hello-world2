@@ -45,8 +45,3 @@ jobs:
         git commit -m "Add $readme from template #${{ github.event.issue.number }}"
         git push --set-upstream origin "$tripReportsBranch"
         
-    - name: Add Issue Comment
-      uses: ben-z/actions-comment-on-issue@1.0.2
-        with:
-          message: "Created PR ${{ steps.createPullRequest.outputs.pr_url }} for review\n\n Hey @TEAM_NAME_I_DO_NOT_EXIST_TO_AVOID_NOTIFY_SOME please take a look"
-          RICARDOTOKEN: ${{ secrets.RICARDOTOKEN }}
