@@ -1,19 +1,52 @@
-# This workflow will triage pull requests and apply a label based on the
-# paths that are modified in the pull request.
-#
-# To use this workflow, you will need to set up a .github/labeler.yml
-# file with configuration.  For more information, see:
-# https://github.com/actions/labeler/blob/master/README.md
+name: Add Readme
+on: 
+  issues:
+    types:
+      - labeled
 
-name: Labeler
-on: [pull_request]
-
+env:
+  ProjectId: 1
+  ProjectName: FastTracks
+  IssueColumName: To do
+        
 jobs:
-  label:
-
+  Approve:
     runs-on: ubuntu-latest
-
+    if: github.event.label.name == 'Confirmed'
+        
     steps:
-    - uses: actions/labeler@v2
-      with:
-        repo-token: "${{ secrets.RICARDOTOKEN }}"
+    - name: Checkout
+      uses: actions/checkout@v2.1.0
+
+    - name: set variables
+      run: |
+        customer=$(echo "${{ github.event.issue.body }}" | grep -E 'Customer:' | sed 's/Customer: //gi')
+        echo FOUND CUSTOMER customer
+        echo "::set-env name=customer::$customer"
+        # TODO: more cleanup is necessary on the branch name
+        # BEWARE CODE FOR BRANCH NAME IS DUPLICATED IT IS REPLICATED THE OTHER JOB
+        branchName=$(echo "$customer" | tr ' ' '-')
+        echo "::set-env name=tripReportsBranch::tripreports/$branchName"
+    - name: create branch
+      run: |
+        echo creating branch $AddingNotesDirectory
+        git checkout -b "$NotesDirectory"
+    - name: configure git
+      run: |
+        git config --global user.email "enforcer@test.com"
+        git config --global user.name "The Enforcer"
+    - name: create readme.md from template and add to branch
+      run: |
+        cp "$GITHUB_WORKSPACE/.github/templates/readme.md" "$GITHUB_WORKSPACE/engagement/$readme.md"
+        git add "$GITHUB_WORKSPACE/TripReports/$readme.md"
+        
+    - name: commit and push changes
+      run: |
+        git commit -m "Add $readme from template #${{ github.event.issue.number }}"
+        git push --set-upstream origin "$tripReportsBranch"
+          
+      - name: Add Issue Comment
+        uses: ben-z/actions-comment-on-issue@1.0.2
+        with:
+          message: "Created PR ${{ steps.createPullRequest.outputs.pr_url }} for review\n\n Hey @TEAM_NAME_I_DO_NOT_EXIST_TO_AVOID_NOTIFY_SOME please take a look"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
