@@ -41,7 +41,7 @@ jobs:
 
     - name: create readme from template and add to branch
       run: |
-        cp "$GITHUB_WORKSPACE/.github/templates/readme.md" "$GITHUB_WORKSPACE/engagements/$customer.md"
+        cp "$GITHUB_WORKSPACE/.github/templates/readme.md" "$GITHUB_WORKSPACE/$directory/readme.md"
         git add "$GITHUB_WORKSPACE/engagements/$directory/readme.md"
         
     - name: commit and push changes
