@@ -1,4 +1,4 @@
-name: Trip Reports
+name: Create Readme
 on: 
   issues:
     types:
@@ -12,7 +12,7 @@ env:
 jobs:
   Approve:
     runs-on: ubuntu-latest
-    if: github.event.label.name == 'Approved'
+    if: github.event.label.name == 'Confirmed'
         
     steps:
     - name: Checkout
@@ -26,74 +26,34 @@ jobs:
         # TODO: more cleanup is necessary on the branch name
         # BEWARE CODE FOR BRANCH NAME IS DUPLICATED IT IS REPLICATED THE OTHER JOB
         branchName=$(echo "$customer" | tr ' ' '-')
-        echo "::set-env name=tripReportsBranch::tripreports/$branchName"
+        echo "::set-env name=CreateReadmeBranch::environments/$branchName"
 
     - name: create branch
       run: |
-        echo creating branch $tripReportsBranch
-        git checkout -b "$tripReportsBranch"
+        echo creating branch $CreateReadmeBranch
+        git checkout -b "$CreateReadmeBranch"
 
     - name: configure git
       run: |
         git config --global user.email "enforcer@test.com"
         git config --global user.name "The Enforcer"
 
-    - name: create trip report from template and add to branch
+    - name: create readme from template and add to branch
       run: |
-        cp "$GITHUB_WORKSPACE/.github/devopscat/tripreport.md" "$GITHUB_WORKSPACE/TripReports/$customer.md"
-        git add "$GITHUB_WORKSPACE/TripReports/$customer.md"
+        cp "$GITHUB_WORKSPACE/.github/templates/readme.md" "$GITHUB_WORKSPACE/engagements/$customer.md"
+        git add "$GITHUB_WORKSPACE/engagements/$customer.md"
         
     - name: commit and push changes
       run: |
-        git commit -m "Add $customer initial Trip report from template #${{ github.event.issue.number }}"
-        git push --set-upstream origin "$tripReportsBranch"
+        git commit -m "Add $customer Readmen from template #${{ github.event.issue.number }}"
+        git push --set-upstream origin "$CreateReadmeBranch"
 
-    - name: Add Issue to Project
-      uses: srggrs/assign-one-project-github-action@1.2.0
-      with:
-        project: 'https://github.com/${{ github.repository }}/projects/${{ env.ProjectId }}'
-        column_name:  ${{ env.IssueColumName }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        
-    - name: Add Issue Comment
-      uses: ben-z/actions-comment-on-issue@1.0.2
-      with:
-        message: "Created branch **${{ env.tripReportsBranch }}** with initial trip report for _${{ env.customer}}_\nUpdate the trip report file when the engagement is finished and add the tag _Ready for Review_ and I will create review PR for you"
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  ReadyForReview:
-    name: Ready for Review
-    runs-on: ubuntu-latest
-    if: github.event.label.name == 'Ready For Review'
-    steps:
-      # Force checkout because the action uses the hub extensions that requires a local repo
-      - name: Checkout
-        uses: actions/checkout@v2.1.0
-
-      - name: Set variables
-        run: |
-          customer=$(echo "${{ github.event.issue.body }}" | grep -E 'Customer:' | sed 's/Customer: //gi')
-          echo "::set-env name=customer::$customer"
-          branchName=$(echo "$customer" | tr ' ' '-')
-          echo "::set-env name=tripReportsBranch::tripreports/$branchName"
-          
-      - name: Create pull-request
-        id: createPullRequest
-        uses: repo-sync/pull-request@v2
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          source_branch: ${{ env.tripReportsBranch }}
-          pr_title: 'Trip report: ${{ env.customer}}'
-          pr_label: "FastTrack"
-          pr_body: "Fixes #${{ github.event.issue.number }} :airplane:"
-          
       # TODO: add PR to project, but the task only adds PR if it's coming from a PR action, we cannot specify the 
       # the PR number we want to add
           
-      - name: Add Issue Comment
-        uses: ben-z/actions-comment-on-issue@1.0.2
-        with:
+    - name: Add Issue Comment
+      uses: ben-z/actions-comment-on-issue@1.0.2
+      with:
           message: "Created PR ${{ steps.createPullRequest.outputs.pr_url }} for review\n\n Hey @TEAM_NAME_I_DO_NOT_EXIST_TO_AVOID_NOTIFY_SOME please take a look"
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.RICARDOTOKEN }}
 
