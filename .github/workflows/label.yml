@@ -27,7 +27,8 @@ jobs:
         # BEWARE CODE FOR BRANCH NAME IS DUPLICATED IT IS REPLICATED THE OTHER JOB
         branchName=$(echo "$customer" | tr ' ' '-')
         echo "::set-env name=CreateReadmeBranch::environments/$branchName"
-        directory=github.event.issue.number+"-"+customer
+        directory={github.event.issue.number}+"-"+customer
+        echo $directory
 
     - name: create branch
       run: |
