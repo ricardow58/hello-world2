@@ -24,7 +24,7 @@ jobs:
         # TODO: more cleanup is necessary on the branch name
         # BEWARE CODE FOR BRANCH NAME IS DUPLICATED IT IS REPLICATED THE OTHER JOB
         branchName=$(echo "$customer" | tr ' ' '-')
-        echo "::set-env name=CreateReadmeBranch::environments/$branchName"
+        echo "::set-env name=CreateReadmeBranch::environment/$branchName"
      
     - name: create branch
       run: |
@@ -38,8 +38,8 @@ jobs:
     - name: create readme from template and add to branch
       run: |
         mkdir "$GITHUB_WORKSPACE/engagements/$directory"
-        cp "$GITHUB_WORKSPACE/.github/templates/readme.md" "$GITHUB_WORKSPACE/engagements/$directory/readme.md"
-        git add "$GITHUB_WORKSPACE/engagements/$directory/readme.md"
+        cp "$GITHUB_WORKSPACE/.github/templates/readme.md" "$GITHUB_WORKSPACE/engagement/$directory/readme.md"
+        git add "$GITHUB_WORKSPACE/engagement/$directory/readme.md"
         
     - name: commit and push changes
       run: |
