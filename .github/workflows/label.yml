@@ -27,6 +27,7 @@ jobs:
         # BEWARE CODE FOR BRANCH NAME IS DUPLICATED IT IS REPLICATED THE OTHER JOB
         branchName=$(echo "$customer" | tr ' ' '-')
         echo "::set-env name=CreateReadmeBranch::environments/$branchName"
+        directory=github.event.issue.number+"-"+customer
 
     - name: create branch
       run: |
@@ -41,7 +42,7 @@ jobs:
     - name: create readme from template and add to branch
       run: |
         cp "$GITHUB_WORKSPACE/.github/templates/readme.md" "$GITHUB_WORKSPACE/engagements/$customer.md"
-        git add "$GITHUB_WORKSPACE/engagements/$customer.md"
+        git add "$GITHUB_WORKSPACE/engagements/$directory/readme.md"
         
     - name: commit and push changes
       run: |
