@@ -23,13 +23,14 @@ jobs:
         customer=$(echo "${{ github.event.issue.body }}" | grep -E 'Customer:' | sed 's/Customer: //gi')
         echo FOUND CUSTOMER customer
         echo "::set-env name=customer::$customer"
+        directory=$(echo "${{ github.event.issue.number }}" | "-" | $customer)
+        echo FOUND DIRECTORY customer
+        echo "::set-env name=directory::$directory"
         # TODO: more cleanup is necessary on the branch name
         # BEWARE CODE FOR BRANCH NAME IS DUPLICATED IT IS REPLICATED THE OTHER JOB
         branchName=$(echo "$customer" | tr ' ' '-')
         echo "::set-env name=CreateReadmeBranch::environments/$branchName"
-        directory={github.event.issue.number}+"-"+customer
-        echo $directory
-
+        
     - name: create branch
       run: |
         echo creating branch $CreateReadmeBranch
