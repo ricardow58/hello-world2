@@ -45,7 +45,7 @@ jobs:
         
     - name: commit and push changes
       run: |
-        git commit -m "Add $customer Readmen from template #${{ github.event.issue.number }}"
+        git commit -m "Add $customer Readme from template #${{ github.event.issue.number }}"
         git push --set-upstream origin "$CreateReadmeBranch"
 
       # TODO: add PR to project, but the task only adds PR if it's coming from a PR action, we cannot specify the 
