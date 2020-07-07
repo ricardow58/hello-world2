@@ -20,7 +20,7 @@ jobs:
 
     - name: set variables
       run: |
-        customer=$(echo "${{ github.event.issue.body }}" | grep -E 'Customer:' | sed 's/Customer: //gi')
+        customer=$(echo "${{ github.event.issue.body }}" | grep -E 'Customer Name:' | sed 's/Customer Name: //gi')
         echo FOUND CUSTOMER customer
         echo "::set-env name=customer::$customer"
         directory=$(echo "${{ github.event.issue.number }}-$customer")
