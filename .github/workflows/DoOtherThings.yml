@@ -1,0 +1,54 @@
+name: Create Readme
+on: 
+  issues:
+    types:
+      - labeled
+
+jobs:
+  Approve:
+    runs-on: ubuntu-latest
+    if: github.event.label.name == 'Confirmed'
+        
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.1.0
+
+    - name: set variables
+      run: |
+        customer=$(echo "${{ github.event.issue.body }}" | grep -E 'Customer Name:' | sed 's/Customer Name: //gi')
+        echo FOUND CUSTOMER customer
+        echo "::set-env name=customer::$customer"
+        directory=$(echo "0${{ github.event.issue.number }}$customer")
+        echo FOUND DIRECTORY directory
+        echo "::set-env name=directory::$directory"
+        # TODO: more cleanup is necessary on the branch name
+        # BEWARE CODE FOR BRANCH NAME IS DUPLICATED IT IS REPLICATED THE OTHER JOB
+        branchName=$(echo "$customer" | tr ' ' '-')
+        echo "::set-env name=CreateReadmeBranch::environment/$branchName"
+     
+    - name: create branch
+      run: |
+        echo creating branch $CreateReadmeBranch
+        git checkout -b "$CreateReadmeBranch"
+    
+    - name: configure git
+      run: |
+        git config --global user.email "ricardow58@github.com"
+        git config --global user.name "Ricardo"
+    - name: create readme from template and add to branch
+      run: |
+        mkdir "$GITHUB_WORKSPACE/engagement/$directory"
+        cp "$GITHUB_WORKSPACE/.github/templates/readme.md" "$GITHUB_WORKSPACE/engagement/$directory/readme.md"
+        git add "$GITHUB_WORKSPACE/engagement/$directory/readme.md"
+        
+    - name: commit and push changes
+      run: |
+        git commit -m "Add $customer Readme from template #${{ github.event.issue.number }}"
+        git push --set-upstream origin "$CreateReadmeBranch"
+   
+          
+    - name: Add Issue Comment
+      uses: ben-z/actions-comment-on-issue@1.0.2
+      with:
+          message: "Created PR ${{ steps.createPullRequest.outputs.pr_url }} for review\n\n Hey @TEAM_NAME_I_DO_NOT_EXIST_TO_AVOID_NOTIFY_SOME please take a look"
+          GITHUB_TOKEN: ${{ secrets.RICARDOTOKEN }}
