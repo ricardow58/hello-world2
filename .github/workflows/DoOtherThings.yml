@@ -35,11 +35,12 @@ jobs:
       run: |
         git config --global user.email "ricardow58@github.com"
         git config --global user.name "Ricardo"
-    - name: create readme from template and add to branch
-      run: |
-        mkdir "$GITHUB_WORKSPACE/engagement/$directory"
-        cp "$GITHUB_WORKSPACE/.github/templates/readme.md" "$GITHUB_WORKSPACE/engagement/$directory/readme.md"
-        git add "$GITHUB_WORKSPACE/engagement/$directory/readme.md"
+    
+    #- name: create readme from template and add to branch
+     # run: |
+      #  mkdir "$GITHUB_WORKSPACE/engagement/$directory"
+       # cp "$GITHUB_WORKSPACE/.github/templates/readme.md" "$GITHUB_WORKSPACE/engagement/$directory/readme.md"
+        #git add "$GITHUB_WORKSPACE/engagement/$directory/readme.md"
         
     - name: commit and push changes
       run: |
@@ -52,3 +53,12 @@ jobs:
       with:
           message: "Created PR ${{ steps.createPullRequest.outputs.pr_url }} for review\n\n Hey @TEAM_NAME_I_DO_NOT_EXIST_TO_AVOID_NOTIFY_SOME please take a look"
           GITHUB_TOKEN: ${{ secrets.RICARDOTOKEN }}
+          
+  Deny:
+    runs-on: ubuntu-latest
+    if: github.event.issue.title = "Test"
+    
+
+  
+   
+     
